@@ -1,0 +1,41 @@
+**SETUP
+initDevices:
+   for(int i=0; i <11; i++) {
+     devices[i] = (Device *)0;
+   }
+
+nOBJECTS.connectDevices(devices);
+
+
+**LOOP
+nOBJECTS.sendObjects():
+  do433():
+    If Serial incoming -> doReactors()
+    mySwitch.enableReceive(RX433_INT); - enable interrupt pin for incoming 433MHz
+    If 433 Available && Protocol is between 1 and 5:
+      Depending on protocol:
+        doLacrosseTX3
+        doLacrossWS2355                                         - sends humidity/temp/rainfall/windspeed data as decimal.
+        doWT450                                                 - sends humidity/temp data as decimal
+        doJSON("0",0,tempID,dec2binWzerofill(strDATA),0,true,0) - sends JSON string as binary number
+    If Serial incoming -> doReactors()
+  checkHeartbeat - every 30sec, do:
+    doOnboardRGB()    - sends JSON string of NB Eyes value, then sends JSON string of NB Status value. Then doReactors().
+    doCustomDevices() ??
+
+nOBJECTS.doReactors():
+  Read in string and decode the JSON. Send response or error.
+
+
+
+
+
+Device. Struct with
+strGUID
+intVID
+intDID
+strDATA
+strDATALenMax
+intDATA
+IsString
+void (*didUpdate)(Device*)
